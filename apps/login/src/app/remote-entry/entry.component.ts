@@ -20,9 +20,11 @@ import { UserService } from '@ng-mf/data-access-user';
         </label>
         <button type="submit">Login</button>
       </form>
-      <div *ngIf="isLoggedIn$ | async">User is logged in!</div>
+      @if (isLoggedIn$ | async) {
+        <div>User is logged in!</div>
+      }
     </div>
-  `,
+    `,
   styles: [
     `
       .login-app {

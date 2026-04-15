@@ -10,11 +10,14 @@ import { distinctUntilChanged } from 'rxjs/operators';
   selector: 'ng-mf-root',
   template: `
     <div class="dashboard-nav">Admin Dashboard</div>
-    <div *ngIf="isLoggedIn$ | async; else signIn">
-      You are authenticated so you can see this content.
-    </div>
-    <ng-template #signIn><router-outlet></router-outlet></ng-template>
-  `,
+    @if (isLoggedIn$ | async) {
+      <div>
+        You are authenticated so you can see this content.
+      </div>
+    } @else {
+      <router-outlet></router-outlet>
+    }
+    `,
 })
 export class AppComponent implements OnInit {
   isLoggedIn$ = this.userService.isUserLoggedIn$;
