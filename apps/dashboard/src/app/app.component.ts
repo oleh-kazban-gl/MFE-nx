@@ -1,16 +1,14 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { UserService } from '@ng-mf/data-access-user';
-import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [RouterModule],
   selector: 'ng-mf-root',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="dashboard-nav">Admin Dashboard</div>
-    @if (isLoggedIn$ | async) {
+    @if (isLoggedIn()) {
       <div>
         You are authenticated so you can see this content.
       </div>
@@ -19,23 +17,22 @@ import { distinctUntilChanged } from 'rxjs/operators';
     }
     `,
 })
-export class AppComponent implements OnInit {
-  isLoggedIn$ = this.userService.isUserLoggedIn$;
+export class AppComponent {
+  private readonly userService = inject(UserService);
+  private readonly router = inject(Router);
+  readonly isLoggedIn = this.userService.isUserLoggedIn;
 
-  constructor(private userService: UserService, private router: Router) {}
-
-  ngOnInit() {
-    this.isLoggedIn$
-      .pipe(distinctUntilChanged())
-      .subscribe(async (loggedIn) => {
-        // Queue the navigation after initialNavigation blocking is completed
-        setTimeout(() => {
-          if (!loggedIn) {
-            this.router.navigateByUrl('login');
-          } else {
-            this.router.navigateByUrl('');
-          }
-        });
+  constructor() {
+    effect(() => {
+      const loggedIn = this.isLoggedIn();
+      // Queue the navigation after initialNavigation blocking is completed
+      setTimeout(() => {
+        if (!loggedIn) {
+          this.router.navigateByUrl('login');
+        } else {
+          this.router.navigateByUrl('');
+        }
       });
+    });
   }
 }

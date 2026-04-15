@@ -1,10 +1,8 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ng-mf-nx-welcome',
-  standalone: true,
-  imports: [CommonModule],
+  imports: [],
   template: `
     <!--
      * * * * * * * * * * * * * * * * * * * * * * * * * * * *

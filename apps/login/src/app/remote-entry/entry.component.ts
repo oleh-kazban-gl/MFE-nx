@@ -1,26 +1,25 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserService } from '@ng-mf/data-access-user';
 
 @Component({
-  standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [ReactiveFormsModule],
   selector: 'ng-mf-login-entry',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="login-app">
-      <form class="login-form" (ngSubmit)="login()">
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="login()">
         <label>
           Username:
-          <input type="text" name="username" [(ngModel)]="username" />
+          <input type="text" formControlName="username" />
         </label>
         <label>
           Password:
-          <input type="password" name="password" [(ngModel)]="password" />
+          <input type="password" formControlName="password" />
         </label>
         <button type="submit">Login</button>
       </form>
-      @if (isLoggedIn$ | async) {
+      @if (isLoggedIn()) {
         <div>User is logged in!</div>
       }
     </div>
@@ -47,13 +46,16 @@ import { UserService } from '@ng-mf/data-access-user';
   ],
 })
 export class RemoteEntryComponent {
-  username = '';
-  password = '';
-  isLoggedIn$ = this.userService.isUserLoggedIn$;
+  private readonly userService = inject(UserService);
+  readonly isLoggedIn = this.userService.isUserLoggedIn;
 
-  constructor(private userService: UserService) {}
+  readonly loginForm = new FormGroup({
+    username: new FormControl('', { nonNullable: true }),
+    password: new FormControl('', { nonNullable: true }),
+  });
 
   login() {
-    this.userService.checkCredentials(this.username, this.password);
+    const { username, password } = this.loginForm.getRawValue();
+    this.userService.checkCredentials(username, password);
   }
 }
