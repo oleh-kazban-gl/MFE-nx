@@ -3,7 +3,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dbg": "npx nx serve employee"
+    "start:dashboard": "npx nx serve dashboard",
+    "start:employee": "npx nx serve employee",
+    "start:login": "npx nx serve login",
+    "start:todo": "npx nx serve todo",
+    "dep-graph": "nx dep-graph"
   },
   "private": true,
   "dependencies": {
